@@ -1,5 +1,60 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import profilePic from './assets/profile.jpg';
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+const careerMovements = [
+  { city: 'Rome', coords: [41.9028, 12.4964] },
+  { city: 'Berlin', coords: [52.52, 13.405] },
+  { city: 'London', coords: [51.5072, -0.1276] },
+  { city: 'Stockholm', coords: [59.3293, 18.0686] },
+];
+
+function FitBounds() {
+  const map = useMap();
+  const bounds = L.latLngBounds(careerMovements.map(loc => loc.coords));
+  useEffect(() => {
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }, [map]);
+  return null;
+}
+
+function CareerMap() {
+  const arrowHead = {
+    color: 'blue',
+    weight: 3,
+    opacity: 0.8,
+    smoothFactor: 1,
+    lineCap: 'round',
+    lineJoin: 'round',
+  };
+
+  return (
+    <div className="w-full h-96 rounded overflow-hidden border border-blue-200">
+      <MapContainer zoom={4} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+        <FitBounds />
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+        />
+        {careerMovements.map((loc, idx) => (
+          <Marker key={idx} position={loc.coords}>
+            <Popup>{loc.city}</Popup>
+          </Marker>
+        ))}
+        {careerMovements.slice(1).map((loc, idx) => (
+          <Polyline
+            key={idx}
+            positions={[careerMovements[idx].coords, loc.coords]}
+            pathOptions={arrowHead}
+            dashArray="6,10"
+          />
+        ))}
+      </MapContainer>
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -87,6 +142,13 @@ export default function App() {
             <h2 className="text-lg font-bold border-b pb-1 mb-2">Languages</h2>
             <p>English (Native), French (B2), Japanese (A2)</p>
           </section>
+
+          <section>
+            <h2 className="text-lg font-bold border-b pb-1 mb-2">Career Map</h2>
+            <p className="text-sm text-gray-600 mb-2">Visualizing my journey across cities I've worked in.</p>
+            <CareerMap />
+          </section>
+
         </main>
       </div>
     </div>
