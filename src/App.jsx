@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import profilePic from './assets/profile.jpg';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import ArrowDecorator from './components/ArrowDecorator';
 
 const careerMovements = [
   { city: 'Rome', coords: [41.9028, 12.4964] },
@@ -21,18 +22,39 @@ function FitBounds() {
 }
 
 function CareerMap() {
-  const arrowHead = {
-    color: 'blue',
-    weight: 3,
-    opacity: 0.8,
-    smoothFactor: 1,
-    lineCap: 'round',
-    lineJoin: 'round',
-  };
+  const [visibleLines, setVisibleLines] = useState([]);
+
+  useEffect(() => {
+    let i = 0;
+    let interval;
+
+    function startAnimation() {
+      i = 0;
+      setVisibleLines([]); // Clear lines before starting each loop
+      interval = setInterval(() => {
+        if (i >= careerMovements.length - 1) {
+          clearInterval(interval);
+          // Keep lines visible for 2 seconds, then clear and restart animation
+          setTimeout(() => {
+            setVisibleLines([]);
+            startAnimation();
+          }, 2000);
+          return;
+        }
+        const nextLine = [careerMovements[i].coords, careerMovements[i + 1].coords];
+        setVisibleLines((lines) => [...lines, nextLine]);
+        i++;
+      }, 1000);
+    }
+
+    startAnimation();
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="w-full h-96 rounded overflow-hidden border border-blue-200">
-      <MapContainer zoom={4} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+      <MapContainer zoom={4} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
         <FitBounds />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -43,13 +65,14 @@ function CareerMap() {
             <Popup>{loc.city}</Popup>
           </Marker>
         ))}
-        {careerMovements.slice(1).map((loc, idx) => (
-          <Polyline
-            key={idx}
-            positions={[careerMovements[idx].coords, loc.coords]}
-            pathOptions={arrowHead}
-            dashArray="6,10"
-          />
+        {visibleLines.map((line, idx) => (
+          <React.Fragment key={`line-${idx}`}>
+            <Polyline
+              positions={line}
+              pathOptions={{ color: 'blue', weight: 3, opacity: 0.8 }}
+            />
+            <ArrowDecorator from={line[0]} to={line[1]} />
+          </React.Fragment>
         ))}
       </MapContainer>
     </div>
