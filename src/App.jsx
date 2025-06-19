@@ -16,6 +16,7 @@ import profilePic from './assets/profile.jpg';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import ArrowDecorator from './components/ArrowDecorator';
+import DownloadPDFButton from './components/DownloadPDFButton';
 
 const careerMovements = [
   { city: 'Rome', coords: [41.9028, 12.4964] },
@@ -92,9 +93,11 @@ function CareerMap() {
 }
 
 export default function App() {
+  const cvRef = useRef();
+
   return (
     <div className="min-h-screen flex justify-center items-start py-10 px-4 bg-gray-100">
-      <div className="bg-white rounded-lg shadow-xl flex flex-col md:flex-row w-full max-w-5xl">
+      <div className="bg-white rounded-lg shadow-xl flex flex-col md:flex-row w-full max-w-5xl" ref={cvRef}>
         {/* Sidebar */}
         <aside className="bg-gray-200 w-full md:w-1/3 p-6 text-sm space-y-6">
           <div className="text-center">
@@ -185,6 +188,7 @@ export default function App() {
           </section>
 
         </main>
+        <DownloadPDFButton targetRef={cvRef} filename="JohnDoe_CV.pdf" />
       </div>
     </div>
   );

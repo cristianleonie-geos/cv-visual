@@ -10,6 +10,7 @@
   },
   "homepage": "https://cristianleonie-geos.github.io/cv-visual/",
   "dependencies": {
+    "html2pdf.js": "^0.10.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
