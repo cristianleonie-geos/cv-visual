@@ -17,11 +17,12 @@ export default function DownloadPDFButton({ targetRef, filename = 'CV.pdf' }) {
   return (
     <button
       onClick={handleDownload}
-      className="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+      className="fixed bottom-6 right-6 flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white font-medium py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
       title="Download this CV as PDF"
       type="button"
     >
-      📥 Download as PDF
+      <span className="text-xl">📄</span>
+      <span>Download CV</span>
     </button>
   );
 }
